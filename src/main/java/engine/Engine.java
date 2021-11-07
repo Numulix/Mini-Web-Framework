@@ -1,12 +1,22 @@
 package engine;
 
 
+import annotations.Bean;
+import annotations.Controller;
+import annotations.Service;
+import framework.MiniWebFramework;
+
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 // Predstavlja Dependency Injection Engine (DI Engine)
 public class Engine {
+
+    public static HashMap<String, Object> classMap = new HashMap<>();
+    public static HashMap<String, Object> controllerClassMap = new HashMap<>();
 
     public static final List<Class> getClassesFromPackage(String pkgName) {
         String path = pkgName.replaceAll("//.", File.separator);
@@ -41,6 +51,22 @@ public class Engine {
         }
 
         return classList;
+    }
+
+    public static void initAllClasses() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        List<Class> allClasses = getClassesFromPackage("");
+        for (Class cl: allClasses) {
+            if (cl.isAnnotationPresent(Controller.class)) {
+                System.out.println("!- Engine -! Klasa " + cl.getName() + " je kontroler");
+                MiniWebFramework.addControllerClass(cl);
+                controllerClassMap.put(cl.getName(), cl.getConstructor().newInstance());
+            }
+
+            if (cl.isAnnotationPresent(Bean.class) || cl.isAnnotationPresent(Service.class)) {
+                classMap.put(cl.getName(), cl.getConstructor().newInstance());
+                System.out.println("!- Engine -! Napravljena nova instanca klase " + cl.getName());
+            }
+        }
     }
 
 }

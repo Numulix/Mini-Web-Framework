@@ -5,6 +5,7 @@ import engine.Engine;
 import framework.MiniWebFramework;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -13,16 +14,9 @@ public class Server {
 
     public static final int TCP_PORT = 8080;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-//        for (Class cl: Engine.getClassesFromPackage("")) {
-//            System.out.println(cl.getName());
-//        }
-
-        List<Class> allClasses = Engine.getClassesFromPackage("");
-        for (Class cl: allClasses) {
-            MiniWebFramework.scanControllerMethods(cl);
-        }
+        Engine.initAllClasses();
 
         try {
             ServerSocket serverSocket = new ServerSocket(TCP_PORT);
