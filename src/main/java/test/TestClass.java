@@ -15,13 +15,13 @@ public class TestClass {
     @Path(route = "/test1")
     @GET
     public void testMethod1() {
-
+        System.out.println("Poziv iz metode testMethod1");
     }
 
     @Path(route = "/test2")
     @POST
     public void testMethod2() {
-
+        System.out.println("Poziv iz metode testMethod2");
     }
 
 }

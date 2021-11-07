@@ -3,7 +3,10 @@ package framework;
 import annotations.GET;
 import annotations.POST;
 import annotations.Path;
+import engine.Engine;
+import framework.request.Request;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +34,19 @@ public class MiniWebFramework {
                     System.out.println("!- MiniWebFramework -! Metoda " + m.getName() + " dodata u POST metode");
                 }
             }
+        }
+    }
+
+    public static void processRequest(Request req) throws InvocationTargetException, IllegalAccessException {
+        switch (req.getMethod().toString()) {
+            case "GET":
+                Method mGet = methodGetRoutes.get(req.getLocation());
+                mGet.invoke(Engine.controllerClassMap.get(mGet.getDeclaringClass().getName()));
+                break;
+            case "POST":
+                Method mPost = methodPostRoutes.get(req.getLocation());
+                mPost.invoke(Engine.controllerClassMap.get(mPost.getDeclaringClass().getName()));
+                break;
         }
     }
 

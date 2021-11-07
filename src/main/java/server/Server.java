@@ -14,7 +14,7 @@ public class Server {
 
     public static final int TCP_PORT = 8080;
 
-    public static void main(String[] args) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
         Engine.initAllClasses();
 

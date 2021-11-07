@@ -1,5 +1,6 @@
 package server;
 
+import framework.MiniWebFramework;
 import framework.response.JsonResponse;
 import framework.response.Response;
 import framework.request.enums.Method;
@@ -9,6 +10,7 @@ import framework.request.Request;
 import framework.request.exceptions.RequestNotValidException;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +49,8 @@ public class ServerThread implements Runnable{
                 return;
             }
 
+            MiniWebFramework.processRequest(request);
+
 
             // Response example
             Map<String, Object> responseMap = new HashMap<>();
@@ -62,6 +66,10 @@ public class ServerThread implements Runnable{
             socket.close();
 
         } catch (IOException | RequestNotValidException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
