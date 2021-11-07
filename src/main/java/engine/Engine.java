@@ -17,6 +17,7 @@ public class Engine {
 
     public static HashMap<String, Object> classMap = new HashMap<>();
     public static HashMap<String, Object> controllerClassMap = new HashMap<>();
+    public static DContainer dc = new DContainer();
 
     public static final List<Class> getClassesFromPackage(String pkgName) {
         String path = pkgName.replaceAll("//.", File.separator);
@@ -26,12 +27,12 @@ public class Engine {
         String[] classPathDirs = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 
         String name;
-        for (String entry: classPathDirs) {
+        for (String entry : classPathDirs) {
             // Ne ucitavamo klase sa .jar fajlova
             if (!entry.endsWith(".jar")) {
                 try {
                     File base = new File(entry + File.separatorChar + path);
-                    for (File file: base.listFiles()) {
+                    for (File file : base.listFiles()) {
                         name = file.getName();
                         if (name.endsWith(".class")) {
                             name = name.replaceFirst(".class", "");
@@ -55,14 +56,15 @@ public class Engine {
 
     public static void initAllClasses() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         List<Class> allClasses = getClassesFromPackage("");
-        for (Class cl: allClasses) {
+        for (Class cl : allClasses) {
             if (cl.isAnnotationPresent(Controller.class)) {
                 System.out.println("!- Engine -! Klasa " + cl.getName() + " je kontroler");
                 MiniWebFramework.addControllerClass(cl);
                 controllerClassMap.put(cl.getName(), cl.getConstructor().newInstance());
             }
 
-            if (cl.isAnnotationPresent(Bean.class) || cl.isAnnotationPresent(Service.class)) {
+            if ((cl.isAnnotationPresent(Bean.class) && (((Bean) cl.getAnnotation(Bean.class)).scope().equals("singleton")))
+                    || cl.isAnnotationPresent(Service.class)) {
                 classMap.put(cl.getName(), cl.getConstructor().newInstance());
                 System.out.println("!- Engine -! Napravljena nova instanca klase " + cl.getName());
             }
