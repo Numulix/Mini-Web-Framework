@@ -7,6 +7,7 @@ import framework.MiniWebFramework;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -98,9 +99,63 @@ public class Engine {
         return cl.isAnnotationPresent(Bean.class) || cl.isAnnotationPresent(Service.class) || cl.isAnnotationPresent(Component.class);
     }
 
-    public static void injectObjectAnnotations(Object obj) {
+    public static void injectObjectAnnotations(Object obj) throws Exception {
         Class cl = obj.getClass();
         Field[] fields = cl.getDeclaredFields();
+
+        for (Field f: fields) {
+            if (f.isAnnotationPresent(Autowired.class)) {
+
+                if (f.getType().isInterface() && !f.isAnnotationPresent(Qualifier.class)) {
+                    throw new Exception("Interface attribute is annotated with @Autowired without @Qualifier annotation");
+                }
+
+                // Gledamo da li je atribut klasa koja nije primitivna
+                if (!f.getType().isInterface() && !f.getType().isPrimitive())  {
+                    Boolean isVerbose = f.getAnnotation(Autowired.class).verbose();
+                    Object o = null;
+
+                    int accessor = f.getModifiers();
+                    f.setAccessible(true);
+
+                    Class type = f.getType();
+                    o = getSingletonOrNewInstance(type);
+
+                    if (o != null) {
+                        f.set(obj, o);
+                        if (isVerbose) {
+                            System.out.println("Initialized <" + type.getName() + "> <" + f.getName() + "> " +
+                                    "in <" + obj.getClass().getName() + "> on <" + LocalDateTime.now() +
+                                    "> with <" + f.hashCode() + ">");
+                        }
+                    }
+                    // Atribut koji je interfejs mora biti anotiran i sa Qualifier
+                } else if (f.getType().isInterface() && f.isAnnotationPresent(Qualifier.class)) {
+
+                }
+
+            }
+        }
+    }
+
+    public static Object getSingletonOrNewInstance(Class type) throws Exception {
+        Object returnValue = null;
+
+        if (type.isAnnotationPresent(Bean.class)) {
+            String scope = ((Bean)type.getAnnotation(Bean.class)).scope();
+            if (scope.equals("singleton")) returnValue = classMap.get(type.getName());
+            else if (scope.equals("prototype")) returnValue = type.getConstructor().newInstance();
+        } else if (type.isAnnotationPresent(Service.class)) {
+            String scope = ((Service)type.getAnnotation(Service.class)).scope();
+            if (scope.equals("singleton")) returnValue = classMap.get(type.getName());
+            else if (scope.equals("prototype")) returnValue = type.getConstructor().newInstance();
+        } else if (type.isAnnotationPresent(Component.class)) {
+            String scope = ((Component)type.getAnnotation(Component.class)).scope();
+            if (scope.equals("prototype")) returnValue = type.getConstructor().newInstance();
+            else if (scope.equals("singleton")) returnValue = classMap.get(type.getName());
+        }
+
+        return returnValue;
     }
 
 }
