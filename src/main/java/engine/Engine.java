@@ -140,6 +140,7 @@ public class Engine {
                         throw new Exception("No bean for qualifier");
                     }
 
+                    Boolean isVerbose = f.getAnnotation(Autowired.class).verbose();
                     Object o = null;
 
                     int accessor = f.getModifiers();
@@ -150,9 +151,11 @@ public class Engine {
 
                     if (o != null) {
                         f.set(obj, o);
-                        System.out.println("Initialized <" + type.getName() + "> <" + f.getName() + "> " +
-                                "in <" + obj.getClass().getName() + "> on <" + LocalDateTime.now() +
-                                "> with <" + f.hashCode() + ">");
+                        if (isVerbose) {
+                            System.out.println("Initialized <" + type.getName() + "> <" + f.getName() + "> " +
+                                    "in <" + obj.getClass().getName() + "> on <" + LocalDateTime.now() +
+                                    "> with <" + f.hashCode() + ">");
+                        }
 
                         injectObjectAnnotations(o);
                     }
