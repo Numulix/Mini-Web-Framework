@@ -6,7 +6,7 @@ import framework.MiniWebFramework;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,7 +90,7 @@ public class Engine {
             }
         }
 
-        for (Map.Entry<String, Object> entry: classMap.entrySet()) {
+        for (Map.Entry<String, Object> entry: controllerClassMap.entrySet()) {
             injectObjectAnnotations(entry.getValue());
         }
     }
@@ -128,10 +128,35 @@ public class Engine {
                                     "in <" + obj.getClass().getName() + "> on <" + LocalDateTime.now() +
                                     "> with <" + f.hashCode() + ">");
                         }
+                        injectObjectAnnotations(o);
                     }
+
+                    f.setAccessible(Modifier.toString(accessor).equals("public"));
                     // Atribut koji je interfejs mora biti anotiran i sa Qualifier
                 } else if (f.getType().isInterface() && f.isAnnotationPresent(Qualifier.class)) {
+                    String qValue = f.getAnnotation(Qualifier.class).value();
 
+                    if (dc.getQualifiers().get(qValue) == null) {
+                        throw new Exception("No bean for qualifier");
+                    }
+
+                    Object o = null;
+
+                    int accessor = f.getModifiers();
+                    f.setAccessible(true);
+
+                    Class type = dc.getQualifiers().get(qValue);
+                    o = getSingletonOrNewInstance(type);
+
+                    if (o != null) {
+                        f.set(obj, o);
+                        System.out.println("Initialized <" + type.getName() + "> <" + f.getName() + "> " +
+                                "in <" + obj.getClass().getName() + "> on <" + LocalDateTime.now() +
+                                "> with <" + f.hashCode() + ">");
+
+                        injectObjectAnnotations(o);
+                    }
+                    f.setAccessible(Modifier.toString(accessor).equals("public"));
                 }
 
             }
