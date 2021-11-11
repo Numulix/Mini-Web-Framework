@@ -20,6 +20,7 @@ public class Engine {
     public static HashMap<String, Object> controllerClassMap = new HashMap<>();
     public static DContainer dc = new DContainer();
 
+    // https://stackoverflow.com/questions/4607352/class-discovery-reflection-jars-and-jnlp
     public static final List<Class> getClassesFromPackage(String pkgName) {
         String path = pkgName.replaceAll("//.", File.separator);
         List<Class> classList = new ArrayList<>();
@@ -59,7 +60,7 @@ public class Engine {
         List<Class> allClasses = getClassesFromPackage("");
         for (Class cl : allClasses) {
             if (cl.isAnnotationPresent(Controller.class)) {
-                System.out.println("!- Engine -! Klasa " + cl.getName() + " je kontroler");
+//                System.out.println("!- Engine -! Klasa " + cl.getName() + " je kontroler");
                 MiniWebFramework.addControllerClass(cl);
                 controllerClassMap.put(cl.getName(), cl.getConstructor().newInstance());
                 classMap.put(cl.getName(), cl.getConstructor().newInstance());
@@ -68,7 +69,7 @@ public class Engine {
             if ((cl.isAnnotationPresent(Bean.class) && (((Bean) cl.getAnnotation(Bean.class)).scope().equals("singleton")))
                     || cl.isAnnotationPresent(Service.class)) {
                 classMap.put(cl.getName(), cl.getConstructor().newInstance());
-                System.out.println("!- Engine -! Napravljena nova instanca klase " + cl.getName());
+//                System.out.println("!- Engine -! Napravljena nova instanca klase " + cl.getName());
             }
 
             if (cl.isAnnotationPresent(Qualifier.class)) {
@@ -180,6 +181,8 @@ public class Engine {
             String scope = ((Component)type.getAnnotation(Component.class)).scope();
             if (scope.equals("prototype")) returnValue = type.getConstructor().newInstance();
             else if (scope.equals("singleton")) returnValue = classMap.get(type.getName());
+        } else {
+            throw new Exception("Autowired attribute is not a Bean, Service or Component");
         }
 
         return returnValue;

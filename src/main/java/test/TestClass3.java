@@ -1,8 +1,9 @@
 package test;
 
-import annotations.Autowired;
-import annotations.Controller;
-import annotations.Qualifier;
+import annotations.*;
+import framework.request.Request;
+import framework.response.JsonResponse;
+import framework.response.Response;
 import test.beantest.*;
 
 @Controller
@@ -25,5 +26,22 @@ public class TestClass3 {
     private BeanClassWithAutowired beanClassWithAutowired;
 
     public TestClass3() {
+    }
+
+    @Path(route = "/component")
+    @GET
+    public Response componentRes(Request req) {
+        componentClass.setTestNum(2);
+        Response res = new JsonResponse(componentClass);
+        return res;
+    }
+
+    @Path(route = "/anotherClass")
+    @GET
+    public Response anotherPersonMethod(Request req) {
+        personBean.setPrezime("Milovanovic");
+        Response res = new JsonResponse(personBean);
+
+        return res;
     }
 }

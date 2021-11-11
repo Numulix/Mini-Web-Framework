@@ -50,6 +50,7 @@ public class ServerThread implements Runnable{
             }
 
             Response response = MiniWebFramework.processRequest(request);
+            response.getHeader().add("Content-Type", "application/json");
 
 
             // Response example
