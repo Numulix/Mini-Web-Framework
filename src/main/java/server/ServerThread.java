@@ -49,15 +49,15 @@ public class ServerThread implements Runnable{
                 return;
             }
 
-            MiniWebFramework.processRequest(request);
+            Response response = MiniWebFramework.processRequest(request);
 
 
             // Response example
-            Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("route_location", request.getLocation());
-            responseMap.put("route_method", request.getMethod().toString());
-            responseMap.put("parameters", request.getParameters());
-            Response response = new JsonResponse(responseMap);
+//            Map<String, Object> responseMap = new HashMap<>();
+//            responseMap.put("route_location", request.getLocation());
+//            responseMap.put("route_method", request.getMethod().toString());
+//            responseMap.put("parameters", request.getParameters());
+//            Response response = new JsonResponse(responseMap);
 
             out.println(response.render());
 
@@ -65,11 +65,7 @@ public class ServerThread implements Runnable{
             out.close();
             socket.close();
 
-        } catch (IOException | RequestNotValidException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (IOException | RequestNotValidException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -95,7 +91,7 @@ public class ServerThread implements Runnable{
         } while(!command.trim().equals(""));
 
         if(method.equals(Method.POST)) {
-            int contentLength = Integer.parseInt(header.get("content-length"));
+            int contentLength = Integer.parseInt(header.get("Content-Length"));
             char[] buff = new char[contentLength];
             in.read(buff, 0, contentLength);
             String parametersString = new String(buff);

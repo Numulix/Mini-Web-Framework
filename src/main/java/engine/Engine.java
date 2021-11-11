@@ -124,9 +124,9 @@ public class Engine {
                     if (o != null) {
                         f.set(obj, o);
                         if (isVerbose) {
-                            System.out.println("Initialized <" + type.getName() + "> <" + f.getName() + "> " +
-                                    "in <" + obj.getClass().getName() + "> on <" + LocalDateTime.now() +
-                                    "> with <" + f.hashCode() + ">");
+                            System.out.println("Initialized " + type.getName() + " " + f.getName() + " " +
+                                    "in " + obj.getClass().getName() + " on " + LocalDateTime.now() +
+                                    " with " + f.hashCode());
                         }
                         injectObjectAnnotations(o);
                     }
@@ -152,11 +152,10 @@ public class Engine {
                     if (o != null) {
                         f.set(obj, o);
                         if (isVerbose) {
-                            System.out.println("Initialized <" + type.getName() + "> <" + f.getName() + "> " +
-                                    "in <" + obj.getClass().getName() + "> on <" + LocalDateTime.now() +
-                                    "> with <" + f.hashCode() + ">");
+                            System.out.println("Initialized " + type.getName() + " " + f.getName() + " " +
+                                    "in " + obj.getClass().getName() + " on " + LocalDateTime.now() +
+                                    " with " + f.hashCode());
                         }
-
                         injectObjectAnnotations(o);
                     }
                     f.setAccessible(Modifier.toString(accessor).equals("public"));

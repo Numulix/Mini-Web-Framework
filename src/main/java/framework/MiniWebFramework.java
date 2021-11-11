@@ -5,6 +5,7 @@ import annotations.POST;
 import annotations.Path;
 import engine.Engine;
 import framework.request.Request;
+import framework.response.Response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,17 +38,16 @@ public class MiniWebFramework {
         }
     }
 
-    public static void processRequest(Request req) throws InvocationTargetException, IllegalAccessException {
+    public static Response processRequest(Request req) throws InvocationTargetException, IllegalAccessException {
         switch (req.getMethod().toString()) {
             case "GET":
                 Method mGet = methodGetRoutes.get(req.getLocation());
-                mGet.invoke(Engine.controllerClassMap.get(mGet.getDeclaringClass().getName()));
-                break;
+                return (Response) mGet.invoke(Engine.controllerClassMap.get(mGet.getDeclaringClass().getName()), req);
             case "POST":
                 Method mPost = methodPostRoutes.get(req.getLocation());
-                mPost.invoke(Engine.controllerClassMap.get(mPost.getDeclaringClass().getName()));
-                break;
+                return (Response) mPost.invoke(Engine.controllerClassMap.get(mPost.getDeclaringClass().getName()), req);
         }
+        return null;
     }
 
 }
